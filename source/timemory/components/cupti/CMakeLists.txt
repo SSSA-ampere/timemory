@@ -13,7 +13,7 @@ if(TIMEMORY_USE_CUPTI)
             LINKER_LANGUAGE CUDA)
     endif()
 
-    build_intermediate_library(USE_INTERFACE                               
+    build_intermediate_library(USE_INTERFACE
         NAME                ${NAME}
         TARGET              ${NAME}-component
         CATEGORY            COMPONENT
@@ -22,4 +22,7 @@ if(TIMEMORY_USE_CUPTI)
         SOURCES             ${source_files}
         DEPENDS             ${DEPS}
         PROPERTY_DEPENDS    GLOBAL)
+
+    list(REMOVE_ITEM source_files ${CMAKE_CURRENT_SOURCE_DIR}/extern.cpp)
+    timemory_install_header_files(${source_files})
 endif()

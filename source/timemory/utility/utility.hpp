@@ -150,26 +150,12 @@ isfinite(const Tp& arg)
 //
 //======================================================================================//
 
-template <typename Tp, typename ApiT = TIMEMORY_API>
-auto&
-type_mutex(const uint64_t& _n = 0)
+template <typename Tp, size_t N = 4, typename ApiT = TIMEMORY_API>
+inline auto&
+type_mutex(size_t _n = 0)
 {
-    static std::vector<mutex_t*> _mutexes{};
-    if(_n < _mutexes.size())
-        return *(_mutexes.at(_n));
-
-    static mutex_t _internal{};
-    auto_lock_t    _internal_lk{ _internal };
-
-    // check in case another already resized
-    if(_n < _mutexes.size())
-        return *(_mutexes.at(_n));
-
-    // append new mutexes
-    auto i0 = _mutexes.size();
-    for(auto i = i0; i < (_n + 1); ++i)
-        _mutexes.push_back(new mutex_t{});
-    return *(_mutexes.at(_n));
+    static std::array<mutex_t, N> _mutexes{};
+    return _mutexes.at(_n % N);
 }
 
 //--------------------------------------------------------------------------------------//
