@@ -21,8 +21,16 @@ add_library(gpu-roofline-compile-options INTERFACE)
 target_compile_options(gpu-roofline-compile-options INTERFACE
     $<$<COMPILE_LANGUAGE:CUDA>:--default-stream=per-thread>)
 
+if(CUDA_VERSION VERSION_LESS 11.0)
+    target_compile_options(gpu-roofline-compile-options INTERFACE
+        $<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>)
+else()
+    target_compile_options(gpu-roofline-compile-options INTERFACE
+        $<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda>)
+endif()
+
 set(EXE_NAME ex_gpu_roofline)
-set(COMPONENTS compile-options analysis-tools roofline)
+set(COMPONENTS compile-options analysis-tools roofline-component)
 set(timemory_FIND_COMPONENTS_INTERFACE timemory-gpu-roofline-example)
 set_source_files_properties(${EXE_NAME}.cpp PROPERTIES
     LANGUAGE CUDA

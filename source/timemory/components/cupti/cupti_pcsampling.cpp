@@ -38,6 +38,7 @@ namespace tim
 namespace cupti
 {
 //
+TIMEMORY_CUPTI_INLINE
 pcdata::pcdata(CUpti_PCSamplingData&& _data)
 : totalNumPcs{ _data.totalNumPcs }
 , remainingNumPcs{ _data.remainingNumPcs }
@@ -62,8 +63,8 @@ pcdata::pcdata(CUpti_PCSamplingData&& _data)
 namespace component
 {
 //
-CUpti_PCSamplingData
-cupti_pcsampling::get_pcsampling_data(size_t numStallReasons, size_t numPcsToCollect)
+TIMEMORY_CUPTI_INLINE CUpti_PCSamplingData
+                      cupti_pcsampling::get_pcsampling_data(size_t numStallReasons, size_t numPcsToCollect)
 {
     // User buffer to hold collected PC Sampling data in PC-To-Counter format
     CUpti_PCSamplingData pcSamplingData = {};
@@ -77,7 +78,7 @@ cupti_pcsampling::get_pcsampling_data(size_t numStallReasons, size_t numPcsToCol
     return pcSamplingData;
 }
 //
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::free_pcsampling_data(CUpti_PCSamplingData pcSamplingData)
 {
     // Free memory
@@ -112,7 +113,7 @@ getStallReason(const uint32_t& stallReasonCount,
     return "ERROR_STALL_REASON_INDEX_NOT_FOUND";
 }
 //
-void
+TIMEMORY_CUPTI_INLINE void
 printPCSamplingData(CUpti_PCSamplingData* pPcSamplingData,
                     const uint32_t& stallReasonCount, uint32_t* pStallReasonIndex,
                     char** pStallReasons)
@@ -149,8 +150,8 @@ printPCSamplingData(CUpti_PCSamplingData* pPcSamplingData,
               << std::endl;
 }
 //
-cupti_pcsampling::config_type
-cupti_pcsampling::configure()
+TIMEMORY_CUPTI_INLINE cupti_pcsampling::config_type
+                      cupti_pcsampling::configure()
 {
     CUcontext      cuCtx;
     CUdevice       cuDevice;
@@ -381,7 +382,7 @@ cupti_pcsampling::configure()
                            pcSamplingStopParams, stallReasonCount, _num_collect);
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::initialize()
 {
     auto& _cfg = get_configuration_data();
@@ -389,7 +390,7 @@ cupti_pcsampling::initialize()
         std::tie(_cfg.enabled, _cfg.data) = std::make_tuple(true, configure());
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::finalize()
 {
     auto& _cfg = get_configuration_data();
@@ -407,8 +408,8 @@ cupti_pcsampling::finalize()
     }
 }
 
-cupti_pcsampling::data_type
-cupti_pcsampling::record()
+TIMEMORY_CUPTI_INLINE cupti_pcsampling::data_type
+                      cupti_pcsampling::record()
 {
     auto& _cfg = get_configuration_data();
     if(!_cfg.enabled)
@@ -429,7 +430,7 @@ cupti_pcsampling::record()
     return data_type{ std::move(pcSamplingData) };
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::sample()
 {
     cupti::pcdata _data = record();
@@ -442,7 +443,7 @@ cupti_pcsampling::sample()
     }
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::store(const value_type& _data)
 {
     value = _data;
@@ -451,7 +452,7 @@ cupti_pcsampling::store(const value_type& _data)
             itr->value += value;
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::store(value_type&& _data)
 {
     value = std::move(_data);
@@ -460,7 +461,7 @@ cupti_pcsampling::store(value_type&& _data)
             itr->value += value;
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::start()
 {
     auto _n = tracker_type::start();
@@ -474,7 +475,7 @@ cupti_pcsampling::start()
         get_stack().insert(this);
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::stop()
 {
     sample();
@@ -490,13 +491,13 @@ cupti_pcsampling::stop()
     }
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::set_started()
 {
     base_type::set_started();
 }
 
-void
+TIMEMORY_CUPTI_INLINE void
 cupti_pcsampling::set_stopped()
 {
     // don't increment laps
@@ -504,8 +505,8 @@ cupti_pcsampling::set_stopped()
         set_is_running(false);
 }
 
-std::string
-cupti_pcsampling::get_display() const
+TIMEMORY_CUPTI_INLINE std::string
+                      cupti_pcsampling::get_display() const
 {
     std::stringstream ss;
     ss.precision(base_type::get_precision());
@@ -515,8 +516,8 @@ cupti_pcsampling::get_display() const
     return ss.str();
 }
 //
-std::vector<uint32_t>
-cupti_pcsampling::get() const
+TIMEMORY_CUPTI_INLINE std::vector<uint32_t>
+                      cupti_pcsampling::get() const
 {
     auto                  _n = cupti::pcstall::get_size();
     std::vector<uint32_t> _data{};
@@ -530,8 +531,8 @@ cupti_pcsampling::get() const
     return _data;
 }
 //
-std::vector<std::string>
-cupti_pcsampling::label_array()
+TIMEMORY_CUPTI_INLINE std::vector<std::string>
+                      cupti_pcsampling::label_array()
 {
     auto                     _n = cupti::pcstall::get_size();
     std::vector<std::string> _data{};

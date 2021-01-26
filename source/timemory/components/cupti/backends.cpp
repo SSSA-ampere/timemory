@@ -42,7 +42,7 @@ namespace tim
 namespace cupti
 {
 //
-pcdata&
+TIMEMORY_CUPTI_INLINE pcdata&
 pcdata::operator+=(const pcdata& rhs)
 {
     assert(rangeId == rhs.rangeId);
@@ -53,7 +53,7 @@ pcdata::operator+=(const pcdata& rhs)
     return *this;
 }
 //
-pcdata&
+TIMEMORY_CUPTI_INLINE pcdata&
 pcdata::operator+=(pcdata&& rhs)
 {
     assert(rangeId == rhs.rangeId);
@@ -64,7 +64,7 @@ pcdata::operator+=(pcdata&& rhs)
     return *this;
 }
 //
-pcdata&
+TIMEMORY_CUPTI_INLINE pcdata&
 pcdata::operator-=(const pcdata& rhs)
 {
     assert(rangeId == rhs.rangeId);
@@ -82,7 +82,7 @@ pcdata::operator-=(const pcdata& rhs)
     return *this;
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcdata::append(const pcsample& _sample)
 {
     for(auto& itr : samples)
@@ -97,7 +97,7 @@ pcdata::append(const pcsample& _sample)
     return true;
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcdata::append(pcsample&& _sample)
 {
     for(auto& itr : samples)
@@ -114,6 +114,7 @@ pcdata::append(pcsample&& _sample)
 //
 //--------------------------------------------------------------------------------------//
 //
+TIMEMORY_CUPTI_INLINE
 pcsample::pcsample()
 {
     for(size_t i = 0; i < stalls.size(); ++i)
@@ -122,6 +123,7 @@ pcsample::pcsample()
 //---------------------------------------//
 #if defined(TIMEMORY_USE_CUPTI_PCSAMPLING)
 //---------------------------------------//
+TIMEMORY_CUPTI_INLINE
 pcsample::pcsample(const CUpti_PCSamplingPCData_t& _pcdata)
 : cubinCrc(_pcdata.cubinCrc)
 , pcOffset(_pcdata.pcOffset)
@@ -143,11 +145,13 @@ pcsample::pcsample(const CUpti_PCSamplingPCData_t& _pcdata)
 //---------------------------------------//
 #else
 //---------------------------------------//
-pcsample::pcsample(const CUpti_PCSamplingPCData_t&) {}
+TIMEMORY_CUPTI_INLINE
+pcsample::pcsample(const CUpti_PCSamplingPCData_t&)
+{}
 //---------------------------------------//
 #endif
 //
-const pcsample&
+TIMEMORY_CUPTI_INLINE const pcsample&
 pcsample::operator+=(const pcsample& rhs) const
 {
     for(int32_t i = 0; i < stall_reasons_size; ++i)
@@ -157,7 +161,7 @@ pcsample::operator+=(const pcsample& rhs) const
     return *this;
 }
 //
-const pcsample&
+TIMEMORY_CUPTI_INLINE const pcsample&
 pcsample::operator-=(const pcsample& rhs) const
 {
     for(int32_t i = 0; i < stall_reasons_size; ++i)
@@ -167,28 +171,28 @@ pcsample::operator-=(const pcsample& rhs) const
     return *this;
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcsample::operator==(const pcsample& rhs) const
 {
     return std::tie(cubinCrc, pcOffset, functionIndex) ==
            std::tie(rhs.cubinCrc, rhs.pcOffset, rhs.functionIndex);
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcsample::operator<(const pcsample& rhs) const
 {
     return (cubinCrc < rhs.cubinCrc) || (pcOffset < rhs.pcOffset) ||
            (functionIndex < rhs.functionIndex);
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcsample::operator<=(const pcsample& rhs) const
 {
     return (*this == rhs) || (*this < rhs);
 }
 //
-std::string
-pcsample::name() const
+TIMEMORY_CUPTI_INLINE std::string
+                      pcsample::name() const
 {
 #if defined(TIMEMORY_USE_CUPTI_PCSAMPLING)
     // involves a look-up so cache this result
@@ -235,6 +239,7 @@ pcsample::name() const
 //---------------------------------------//
 #if defined(TIMEMORY_USE_CUPTI_PCSAMPLING)
 //---------------------------------------//
+TIMEMORY_CUPTI_INLINE
 pcstall::pcstall(const CUpti_PCSamplingStallReason_t& _obj)
 : index(_obj.pcSamplingStallReasonIndex)
 , samples(_obj.samples)
@@ -242,30 +247,33 @@ pcstall::pcstall(const CUpti_PCSamplingStallReason_t& _obj)
 //---------------------------------------//
 #else
 //---------------------------------------//
-pcstall::pcstall(const CUpti_PCSamplingStallReason_t&) {}
+TIMEMORY_CUPTI_INLINE
+pcstall::pcstall(const CUpti_PCSamplingStallReason_t&)
+{}
 //---------------------------------------//
 #endif
 //
+TIMEMORY_CUPTI_INLINE
 pcstall::pcstall(uint32_t _index, uint32_t _samples)
 : index(_index)
 , samples(_samples)
 {}
 //
-pcstall&
+TIMEMORY_CUPTI_INLINE pcstall&
 pcstall::operator+=(const pcstall& rhs)
 {
     samples += rhs.samples;
     return *this;
 }
 //
-pcstall&
+TIMEMORY_CUPTI_INLINE pcstall&
 pcstall::operator-=(const pcstall& rhs)
 {
     samples -= rhs.samples;
     return *this;
 }
 //
-const char*
+TIMEMORY_CUPTI_INLINE const char*
 pcstall::name(uint32_t _index)
 {
     if(_index >= get_size())
@@ -279,7 +287,7 @@ pcstall::name(uint32_t _index)
     return "<unknown>";
 }
 //
-bool
+TIMEMORY_CUPTI_INLINE bool
 pcstall::enabled(uint32_t _index)
 {
     if(_index >= get_size())

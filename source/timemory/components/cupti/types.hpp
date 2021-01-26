@@ -22,16 +22,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/**
- * \file timemory/components/cupti/types.hpp
- * \brief Declare the cupti component types
- */
-
 #pragma once
 
 #if !defined(TIMEMORY_CUPTI_SOURCE) && !defined(TIMEMORY_USE_CUPTI_EXTERN) &&            \
     !defined(TIMEMORY_CUPTI_HEADER_MODE)
 #    define TIMEMORY_CUPTI_HEADER_MODE 1
+#endif
+
+#if !defined(TIMEMORY_CUPTI_INLINE)
+#    if defined(TIMEMORY_CUPTI_HEADER_MODE)
+#        define TIMEMORY_CUPTI_INLINE inline
+#    else
+#        define TIMEMORY_CUPTI_INLINE
+#    endif
 #endif
 
 #include "timemory/components/macros.hpp"
@@ -76,18 +79,20 @@ TIMEMORY_DEFINE_CONCRETE_TRAIT(report_statistics, component::cupti_pcsampling, f
 //
 //--------------------------------------------------------------------------------------//
 //
-#if !defined(TIMEMORY_USE_CUPTI) || !defined(TIMEMORY_USE_CUDA)
+#if !defined(TIMEMORY_USE_CUPTI) || !defined(TIMEMORY_USE_CUDA) ||                       \
+    defined(TIMEMORY_COMPILER_INSTRUMENTATION)
 TIMEMORY_DEFINE_CONCRETE_TRAIT(is_available, component::cupti_counters, false_type)
 TIMEMORY_DEFINE_CONCRETE_TRAIT(is_available, component::cupti_activity, false_type)
 #endif
 //
 #if !defined(TIMEMORY_USE_CUPTI) || !defined(TIMEMORY_USE_CUDA) ||                       \
-    !defined(TIMEMORY_USE_CUPTI_NVPERF)
+    !defined(TIMEMORY_USE_CUPTI_NVPERF) || defined(TIMEMORY_COMPILER_INSTRUMENTATION)
 TIMEMORY_DEFINE_CONCRETE_TRAIT(is_available, component::cupti_profiler, false_type)
 #endif
 //
 #if !defined(TIMEMORY_USE_CUPTI) || !defined(TIMEMORY_USE_CUDA) ||                       \
-    !defined(TIMEMORY_USE_CUPTI_PCSAMPLING)
+    !defined(TIMEMORY_USE_CUPTI_PCSAMPLING) ||                                           \
+    defined(TIMEMORY_COMPILER_INSTRUMENTATION)
 TIMEMORY_DEFINE_CONCRETE_TRAIT(is_available, component::cupti_pcsampling, false_type)
 #endif
 //
@@ -176,13 +181,13 @@ TIMEMORY_DEFINE_CONCRETE_TRAIT(report_units, component::cupti_pcsampling, false_
 //
 //======================================================================================//
 //
-TIMEMORY_PROPERTY_SPECIALIZATION(cupti_activity, CUPTI_ACTIVITY,
-                                 "cupti_activity", "cuda_activity")
+TIMEMORY_PROPERTY_SPECIALIZATION(cupti_activity, CUPTI_ACTIVITY, "cupti_activity",
+                                 "cuda_activity")
 //
-TIMEMORY_PROPERTY_SPECIALIZATION(cupti_counters, CUPTI_COUNTERS,
-                                 "cupti_counters", "cuda_hw_counters")
+TIMEMORY_PROPERTY_SPECIALIZATION(cupti_counters, CUPTI_COUNTERS, "cupti_counters",
+                                 "cuda_hw_counters")
 //
-TIMEMORY_PROPERTY_SPECIALIZATION(cupti_pcsampling, CUPTI_PCSAMPLING,
-                                 "cupti_pcsampling", "cuda_pcsampling")
+TIMEMORY_PROPERTY_SPECIALIZATION(cupti_pcsampling, CUPTI_PCSAMPLING, "cupti_pcsampling",
+                                 "cuda_pcsampling")
 //
 // TIMEMORY_PROPERTY_SPECIALIZATION(cupti_profiler, CUPTI_PROFILER, "cupti_profiler", "")
