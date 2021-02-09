@@ -175,6 +175,15 @@ public:
     /// that can be piped to the output stream operator ('<<')
     TIMEMORY_NODISCARD TIMEMORY_INLINE auto get_display() const { return this->load(); }
 
+    /// retrieve the current raw measurement value
+    TIMEMORY_INLINE decltype(auto) load() { return data_type::load(get_is_transient()); }
+
+    /// retrieve the current raw measurement value
+    TIMEMORY_NODISCARD TIMEMORY_INLINE decltype(auto) load() const
+    {
+        return data_type::load(get_is_transient());
+    }
+
     TIMEMORY_INLINE bool operator<(const base_type& rhs) const
     {
         return (load() < rhs.load());
@@ -255,12 +264,6 @@ public:
 
 protected:
     static base_storage_type* get_storage();
-
-    TIMEMORY_INLINE decltype(auto) load() { return data_type::load(get_is_transient()); }
-    TIMEMORY_NODISCARD TIMEMORY_INLINE decltype(auto) load() const
-    {
-        return data_type::load(get_is_transient());
-    }
 
     TIMEMORY_INLINE Type& plus_oper(const base_type& rhs);
     TIMEMORY_INLINE Type& minus_oper(const base_type& rhs);
